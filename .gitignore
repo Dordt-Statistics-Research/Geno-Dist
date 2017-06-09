@@ -36,4 +36,7 @@ vignettes/*.pdf
 *~
 
 # Emacs backup Files
-#*#
+\#*\#
+
+# R Graphics in Emacs
+*/*/Rplots.pdf
