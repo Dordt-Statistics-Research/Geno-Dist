@@ -1,0 +1,293 @@
+\documentclass[12pt]{amsart}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{geometry}                % See geometry.pdf to learn the layout options. There are lots.
+\geometry{letterpaper}                   % \ldots or a4paper or a5paper or \ldots
+%\geometry{landscape}                % Activate for for rotated page geometry
+%\usepackage[parfill]{parskip}    % Activate to begin paragraphs with an empty line rather than an indent
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{epstopdf}
+\usepackage{tikz}
+\usepackage{enumerate}
+\usepackage{hyperref}
+\DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
+
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+}
+
+
+
+\newcommand{\ba}{\begin{enumerate}[(a)]}
+\newcommand{\ea}{\end{enumerate}}
+
+
+
+\newcommand{\bi}{\begin{enumerate}[(i)]}
+\newcommand{\ei}{\end{enumerate}}
+
+
+
+
+\definecolor{resred}{RGB}{214,0,23}
+\def\check#1{{\color{resred}#1}}
+
+%% A nice way to TeX sets
+	\def\set#1{\left\{ {#1} \right\}}
+	\def\setof#1#2{{\left\{#1\,:\,#2\right\}}}
+	\setlength{\textheight}{8.7truein}
+\setlength{\textwidth}{6.5truein}
+\setlength{\evensidemargin}{0truein}
+\setlength{\oddsidemargin}{0truein}
+\setlength{\topmargin}{0truein}
+	
+%% Some useful macros
+	\def\Spec{\operatorname{Spec}}
+	\def\Char{\operatorname{char}}
+        \def\sdefect{\operatorname{sdefect}}
+	\def\C{{\mathbb C}}
+	\def\Z{{\mathbb Z}}
+	%\def\F{{\mathbb F}}
+	\def\bF{{\mathbb F}}
+	\def\Q{{\mathbb Q}}
+	\def\R{{\mathbb R}}
+	\def\P{{\mathbf P}}
+	\def\X{{\mathbb X}}
+	\def\A{{\mathbb A}}
+	\def\V{{\tilde{V}}}
+	\def\mP{{\mathcal P}}
+	\def\H{{\mathcal H}}
+	\def\L{{\mathbb L}}
+	\def\N{{\mathbb N}}
+	\def\M{{M}}
+	\def\sM{{M}}
+	\def\B{{\mathcal B}}
+	\def\E{{\mathcal E}}
+	\def\cC{{\mathcal C}}
+	\def\cD{{\mathcal D}}
+	\def\O{{\mathcal O}}
+	\def\I{{\mathcal I}}
+	\def\sC{{\mathscr C}}
+	\def\x{{\bold x}}
+	\def\c{{1}}
+	%\def\l{{\ell}}
+	\def\y{{\bold y}}
+	\def\field{{k}}
+	\def\e{{\varepsilon}}
+	\def\Span{{\text{span}}}
+	\def\sing{{\text{Sing}}}
+	\def\Ass{{\text{Ass}}}
+	\def\satdeg{{\text{satdeg}}}
+	\def\sat{{\text{sat}}}
+	\def\reg{{\text{reg}}}
+	\def\isomorphic{{\,\cong\,}}
+
+\renewcommand{\geq}{\geqslant}
+\renewcommand{\ge}{\geqslant}
+\renewcommand{\leq}{\leqslant}
+\renewcommand{\le}{\leqslant}
+
+
+%% Setting up theorems
+
+\theoremstyle{plain}
+
+\newtheorem{thm}{Theorem}[]
+\newtheorem{cor}[thm]{Corollary}
+\newtheorem{prop}[thm]{Proposition}
+\newtheorem{lem}[thm]{Lemma}
+\newtheorem{claim}[thm]{Claim}
+
+
+\theoremstyle{definition}
+
+\newtheorem{example}[thm]{Example}
+\newtheorem{ex}[thm]{Example}
+\newtheorem{exdefn}[thm]{Example/Definition}
+\newtheorem{defn}[thm]{Definition}
+\newtheorem{fact}[thm]{Fact}
+\newtheorem{conj}[thm]{Conjecture}
+\newtheorem{question}[thm]{Question}
+\newtheorem{notation}[thm]{Notation}
+\newtheorem{rem}[thm]{Remark}
+
+
+\newtheorem{exer}{{\check{Exercise}}}
+
+
+\usepackage{mathpple}
+%\renewenvironment{proof}[1][\proofname]{\begin{trivlist}\pushQED{\qed}\item[\hskip \labelsep  \bfseries #1{}.\hspace{10pt}]}
+%{\popQED\end{trivlist}}
+%\renewcommand{\qedsymbol}{$\blacksquare$}
+
+%\pagestyle{fancyplain}
+%\chead[\bigbf ]{\bigbf }
+%\cfoot[\it ]{\it }
+%
+%\lhead[\thesection]{\leftmark}
+%\rhead[\thesubsection]{\rightmark}
+
+\title{Method Overview}
+\author{}
+%\address{Mathematics and Statistics Department, Dordt College, Sioux Center, IA 51250-1606}
+%\email{mike.janssen@dordt.edu}
+
+%\date{}                                           % Activate to display a given date or no date
+
+
+
+\begin{document}
+
+\maketitle
+
+
+\section{Definitions}
+
+Let the factor matrix be denoted $F$ and be defined with $m$ rows and $n$ columns where each row is associated with a specific variety and each column with a specific factor.
+Each entry in the matrix should be either -1, 0, or 1.
+Thus we can write\\
+
+$$\bordermatrix{
+ & \phi_0 & \phi_1 & \phi_2 & \cdots & \phi_n \cr
+v_1 & 1 & g_{1,1} & g_{1,2} & \cdots & g_{1,n} \cr
+v_2 & 1 & g_{2,1} & g_{2,2} & \cdots & g_{2,n} \cr
+\vdots & \vdots & \vdots & \vdots & \ddots & \vdots \cr
+v_m & 1 & g_{m,1} & g_{m,2} & \cdots & g_{m,n} \cr
+} = G$$\\
+
+Let the parameter matrix be denoted $B$ and be defined with $5$ rows and $n$ columns where each row is associated with one of the $5$ parameters ($\mu_1, \mu_2, \sigma_1, \sigma_2, p_1$) and each column with a specific factor.
+Entries in the matrix can be any real number.
+The parameter matrix inticates the addative effect of each factor on each parameter.
+We can write\\
+
+$$\bordermatrix{
+ & \phi_0 & \phi_1 & \phi_2 & \cdots & \phi_n \cr
+\mu_1 & \beta_{1,0} & \beta_{1,1} & \beta_{1,2} & \cdots & \beta_{1,n} \cr
+\mu_2 & \beta_{2,0} & \beta_{2,1} & \beta_{2,2} & \cdots & \beta_{2,n} \cr
+p_1 & \beta_{3,0} & \beta_{3,1} & \beta_{3,2} & \cdots & \beta_{3,n} \cr 
+\sigma_1 & \beta_{4,0} & \beta_{4,1} & \beta_{4,2} & \cdots & \beta_{4,n} \cr
+%% \vdots & \vdots & \vdots & \ddots & \vdots \cr
+\sigma_2 & \beta_{5,0} & \beta_{5,1} & \beta_{5,2} & \cdots & \beta_{5,n} \cr
+} = B$$\\
+
+Let the observation matrix be denoted $Y$ and be defined with $m$ rows and $5$ columns such that each row corresponds to a variety and each column to a parameter.
+The entries in the observation matrix denote the observed value of each parameter for each variety.
+The observation matrix can be written as such
+
+$$\bordermatrix{
+ & \mu_1 & \mu_2 & p_1 & \sigma_1 & \sigma_2 \cr
+  v_1 & y_{1,1} & y_{1,2} & y_{1,3} & y_{1,4} & y_{1,5} \cr
+  v_2 & y_{2,1} & y_{2,2} & y_{2,3} & y_{2,4} & y_{2,5} \cr
+  \vdots & \vdots & \vdots & \vdots & \vdots & \vdots \cr
+  v_m & y_{m,1} & y_{m,2} & y_{m,3} & y_{m,4} & y_{m,5} \cr
+} = Y$$\\
+
+
+%% If we multiply the factor matrix and the transpose of the parameter matrix the result is the cumulative effects matrix which indicates the total addative effect on each parameter for each variety.
+%% Thus we can write this product as the definition of the cumulative effects matrix denoted $E$.\\
+
+%% \[ F \cdot P^\mathsf{T} = E = \left[ \begin{array}{ccc}
+%% \sum\limits_{i=1}^n f_{1,i}p_{1,i} & \cdots & \sum\limits_{i=1}^n f_{1,i}p_{5,i} \\
+%% \vdots & \ddots & \vdots \\
+%% \sum\limits_{i=1}^n f_{m,i}p_{1,i} & \cdots & \sum\limits_{i=1}^n f_{m,i}p_{5,i} \\
+%% \end{array} \right] \]\\
+
+\section{General Goal}
+
+The overall goal would be to find a good parameter matrix given a factor matrix and observation matrix.
+
+\subsection{Finding the Parameters}
+
+The first step is to estimate the values of all $5$ parameters for each variety from the data.
+Assuming that each variety is a 2-component normal mixture distribution, we plan to use MLE to pick out the parameters.
+
+%% \subsection{Finding the Cumulative Effects Matrix ($E$)}
+
+%% Our current thought is that we will randomly pick default values for each of the $5$ parameters (the value to which the cumulative effects must be added).
+%% We can then calculate the cumulative effect for each parameter and variety by calculating the difference between the parameter value found using LRT and the default value.
+%% This would give a result for $E$.
+%% Because the choice of default values for the parameters was likely not correct or even good, we will later iterate back to this step to try to find better values.
+
+%% \subsection{Finding the Parameter Matrix ($P$)}
+
+%% Now that we have $F$ (which was given) and $E$ (which was estimated) it would be ideal if we could use techniques from linear algebra to solve for $P$.
+%% The problem with this is that there is likely no exact solution for $P$ because the data will not fit our simplified model exactly.
+%% Instead we would like to find an instance of $P$ such that $F \cdot P^\mathsf{T} = $E'$ \approx E$.
+%% In other words we want to minimize the difference between $E'$ and $E$ for some metric of difference.
+%% By choosing to minimize the sum of squares of the element-wise subraction of $E'$ and $E$ (with the minimized value denoted by $s$) it is possible to find the exact minimum by solving a set of $n$ linear equations in $n$ variables which can be easily done by a computer for reasonably small $n$.
+%% For large $n$ a method such as gradient descent can be employed to estimate the optimal entries for $P$.
+
+%% As mentioned, though, the initial estimate of $E$ was likely not a good one.
+%% It should be possible to use $s$ as a metric of how good or bad $E$ was.
+%% If $s$ is low then we were able to find a cumulative effects matrix and corresponding parameter matrix that closely predicts the effects that we see in the actual distributions.
+%% If $s$ is high then it indicates that the actual data does not fit our model well.
+%% Thus we
+
+\subsection{Finding the Parameter Matrix ($B$)}
+
+We want to find matrix $B$ such that the sum of squares of each column of $G\cdot B^\mathsf{T} - Y$ is minimized.
+The equation to minimize, then is as follows:
+$$ f(\beta_{i,0},\cdots,\beta_{i,n}) = (\beta_{i,1}g_{1,1}+\cdots+\beta_{i,n}g_{1,n} + d_i - q_{1,i})^2 + \cdots + (\beta_{i,1}g_{m,1}+\cdots+\beta_{i,n}g_{m,n} - y_{m,i})^2 $$\\
+To minimize it we set the partial derivatives with respect to each variable to $0$ as follows:
+
+\[\begin{array}{c}
+\dfrac{\partial f}{\partial {\beta_{i,0}}} = 2(\beta_{i,0} + \beta_{i,1}g_{1,1}+\cdots+\beta_{i,n}g_{1,n} - y_{1,i}) + \cdots + 2(\beta_{i,0} + \beta_{i,1}g_{m,1}+\cdots+\beta_{i,n}g_{m,n} - y_{m,i}) = 0 \\\\
+\dfrac{\partial f}{\partial {\beta_{i,1}}} = 2g_{1,1}(\beta_{i,0} + \beta_{i,1}g_{1,1}+\cdots+\beta_{i,n}g_{1,n} - y_{1,i}) + \cdots + 2g_{m,1}(\beta_{i,0} + \beta_{i,1}g_{m,1}+\cdots+\beta_{i,n}g_{m,n} - y_{m,i}) = 0 \\\\
+\vdots\\\\
+\dfrac{\partial f}{\partial {\beta_{i,n}}} = 2g_{1,n}(\beta_{i,0} + \beta_{i,1}g_{1,1}+\cdots+\beta_{i,n}g_{1,n} - y_{1,i}) + \cdots + 2g_{m,n}(\beta_{i,0} + \beta_{i,1}g_{m,1}+\cdots+\beta_{i,n}g_{m,n} - y_{m,i}) = 0 \\\\
+\end{array} \]\\
+
+This gives $n+1$ linear equations in $n+1$ variables which can be solved using linear algebra.
+However, the large $n$ that may be used will likely be prohibitive in doing so, thus we can turn instead to a method such as gradient descent for finding a set of $\beta_{i,k}$'s that is approximately equal to the optimal set.
+
+%% \[\left( \begin{array}{cccc}
+%% (f_{1,1}^2+\cdots+f_{m,1}^2) & (f_{1,1}f_{1,2}+\cdots+f_{m,1}f_{m,2}) & \cdots  & (f_{1,1}f_{1,n}+\cdots+f_{m,1}f_{m,n}) \\
+%% \end{array} \right)
+%% \cdot
+%% \left( \begin{array}{ccc}
+%%   p_{i,1} \\
+%%   \vdots \\
+%%   p_{i,n} \\
+%%   d_i \\
+%% \end{array} \right)
+%% =
+%% \left( \begin{array}{c}
+%%   \sum\limits_{j=1}^m q_{j,i} \\
+%%   \vdots \\
+%%   \sum\limits_{j=1}^m q_{j,i} \\
+%% \end{array} \right)
+%% \]\\
+
+\section{Statistics}
+
+Ideally, after having found the parameter matrix, we would like to see which entries are statistically significant and which are not. Then we can zero any entries that are not significant and generate a new model under the new constraints. Doing multiple iterations should lead to increasingly better estimations. Currently we are not sure how to do this. 
+
+\section{Decisions}
+
+\subsection{Statistical Test of $Y$ and $Y'$}
+
+We had considered determining the statistical significance of each entry of $B$ by individually zeroing a single entry and recomputing $Y'$ and seeing if this modified $Y'$ (call it $Y''$) differed from $Y'$ in a statistically significant way. We considered a paired T-test, but the problem is that because the factors are $1$'s and $-1$'s we care about a change in magnitude of the 
+
+if the factor associated with the zeroed entry was heavily composed of $1$'s across the varieties with only a few $-1$'s then 
+
+\section{Thoughts Going Forward}
+
+Can we extend the ideas of linear regression into our (potentially) hyperplane regression? I think what we end up calculating is a hyperplane in the space (is this space $n$-dimensional or ($n+1$)-dimensional? I think the space is $(n+1)$-dimensional because there are $n$ independent variables and $1$ dependent variable which is the function value. Then the hyperplane is $n$-dimensional) In linear regression in R I think it will give an overall p-value for the fit as well as p-values for both the intercept and the slope, so can we do this same thing so that we get a p-value for each of the factors for each parameter (parameters are all handled independently) as well as an overall p-value for the fit? We should be able to find the sum of squares of residuals across the points. A few of the following links may be useful.
+
+\begin{enumerate}
+  \item https://stats.stackexchange.com/questions/120199/calculate-p-value-for-the-correlation-coefficient
+  \item http://www.psychstat.missouristate.edu/multibook/mlt07.htm
+  \item http://mezeylab.cb.bscb.cornell.edu/labmembers/documents/supplement%205%20-%20multiple%20regression.pdf
+\end{enumerate}
+
+We should maybe check for outliers first before using our method (link 2 above).
+
+We could look into cross validation as well.
+
+\end{document}
+
+  
