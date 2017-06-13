@@ -1,0 +1,1 @@
+https://stats.stackexchange.com/questions/113504/comparing-mclust-and-k-means-centroids
