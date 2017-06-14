@@ -66,8 +66,11 @@ gaussian <- function(x, lambda, mu, sigma) {
     sapply(x, mixnorm)
 }
 
-plot_data <- function(data, ...){
-    invisible(model <- normalmixEM(data, ...))
+plot_data <- function(data, mean.constr = NULL, sd.constr = NULL, ...){
+    invisible(models <- lapply(1:20, function(x) {normalmixEM(data, mean.constr = mean.constr, sd.constr = sd.constr)}))
+    print("here")
+    model <- models[[which.max(sapply(models, function(model) {model$loglik}))]]
+    ## browser()    
     xmin <- min(data)
     xmax <- max(data)
     plot(model, whichplot=2)
@@ -75,25 +78,28 @@ plot_data <- function(data, ...){
           from=xmin,
           to=xmax,
           add=TRUE,
-          col="purple", ...)
+          col="purple", xlab = "Height Difference (cm)", ylab = "Density", main = main, sub = sub)
 }
-
-sample_plots <- c(1,1009,1010,1029,1044,1046,1057,5071,5072,5073,6093,8005,8006,8007,11072,11073,11074)
-
-
-pdf("data/exploratory/samples7.pdf",width=14,height=8.5)
+ 
+sample_plots <- c(1009,1010,1029,1044,1046,1057,5071,5072,5073,6093,8005,8006,8007,11072,11073,11074)
+ 
+ 
+##pdf("data/exploratory/samples7.pdf",width=14,height=8.5)
+pdf("graphs/prelimresults.pdf", width=11, height=8.5)
 par(mfrow=c(1,4))
-for (sample in sample_plots) {
-##for (i in 1:20) {
+for (sample in sample_plots) {         
     name <- paste0("17-LDH-STN-SAG-", sample)
-    ##name <- paste0("17-LDH-STN-SAG-", sample_plots[9])
     print(name)
     invisible(data <- minus_data_by_variety[[name]]$height_diff_cm)
     print(length(data))
-
-    plot_data(data)
-    plot_data(data, mean.constr=c(0,NA), sd.constr=c("a","a"))
-    plot_data(data, mean.constr=c(NA,0), sd.constr=c("a","a"))
-    plot_data(data, sd.constr=c("a","a"))
+   
+    plot_data(data, main = name, sub = "Unconstrained")
+    plot_data(data, sd.constr=c("a","a"), main = name, sub = "SD Constrained")
+    plot_data(data, mean.constr=c(NA,0), main = name,  sub = "Mean Constrained")
+    plot_data(data, sd.constr=c("a","a"), main = name,  sub = "Both Constrained")
 }
 dev.off()
+ 
+ 
+sapply(1:20, function(x) {models[[x]]$loglik})
+model$loglik
