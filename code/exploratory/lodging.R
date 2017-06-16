@@ -70,20 +70,16 @@ BIC <- function(n, k, l) {
     k*log(n) - 2*l
 }
 
-plot.NULLmixEM <- function(model, ...) {
-    plot(x=
-}
-
-plot_data <- function(data, mean.constr = NULL, sd.constr = NULL, ...){
+plot_data <- function(data, free_params, k=2, mean.constr=NULL, sd.constr=NULL, ...){
     ## invisible(models <- mclapply(1:20, function(x) {normalmixEM(data, mean.constr = mean.constr, sd.constr = sd.constr)}, mc.cores=20))
     invisible(models <- mclapply(1:20, function(x) {
         tryCatch(
         {
-            normalmixEM(data, mean.constr = mean.constr, sd.constr = sd.constr)
+            normalmixEM(data, k=k, mean.constr=mean.constr, sd.constr=sd.constr)
         },
         error=function(cond) {
-            NULL
             message("JASON: ERROR")
+            NULL
         })
     }))
     print("here")
@@ -107,74 +103,185 @@ plot_data <- function(data, mean.constr = NULL, sd.constr = NULL, ...){
               to=xmax,
               add=TRUE,
               col="purple")
+        mtext(paste("BIC =",round(BIC(length(data), free_params, model$loglik))))
     }
 }
  
 sample_plots <- c(1009,1010,1029,1044,1046,1057,5071,5072,5073,6093,8005,8006,8007,11072,11073,11074)
-## sample_plots <- rep(8006,16)
-
+sample_plots <- c(8006)
+    
 doit <- function() {
-    pdf("data/exploratory/samples10.pdf",width=14,height=8.5)
+    pdf("data/exploratory/samples12.pdf",width=14,height=8.5)
     ##pdf("graphs/prelimresults.pdf", width=11, height=8.5)
-    par(mfrow=c(1,4))
+    par(mfrow=c(2,4))
     for (sample in sample_plots) {         
         name <- paste0("17-LDH-STN-SAG-", sample)
         print(name)
         invisible(data <- minus_data_by_variety[[name]]$height_diff_cm)
         print(length(data))   
-        plot_data(data, main2 = name, sub = "Unconstrained")
-        plot_data(data, mean.constr=c(NA,0), main2 = name, sub = "Mean Constrained")
-        plot_data(data, sd.constr=c("a","a"), main2 = name, sub = "SD Constrained")
-        plot_data(data, mean.const=c(NA,0), sd.constr=c("a","a"), main2 = name, sub = "Both Constrained")
+        plot_data(data, 5, k=2, main2=name, sub="Unconstrained")
+        plot_data(data, 4, k=2, mean.constr=c(NA,0), main2=name, sub="Mean Constrained")
+        plot_data(data, 4, k=2, sd.constr=c("a","a"), main2=name, sub="SD Constrained")
+        plot_data(data, 3, k=2, mean.const=c(NA,0), sd.constr=c("a","a"), main2=name, sub="Both Constrained")
+        plot_data(data, 8, k=3, main2=name, sub="Unconstrained")
+        plot_data(data, 7, k=3, mean.constr=c(NA,NA,0), main2=name, sub="Mean Constrained")
+        plot_data(data, 6, k=3, sd.constr=c("a","a","a"), main2=name, sub="SD Constrained")
+        plot_data(data, 5, k=3, mean.const=c(NA,NA,0), sd.constr=c("a","a","a"), main2=name, sub="Both Constrained")
     }
     dev.off()
-}
+}   
 
 
-do_it <- function() {
-    out <- tryCatch(
-        {
-            # Just to highlight: if you want to use more than one 
-            # R expression in the "try" part then you'll have to 
-            # use curly brackets.
-            # 'tryCatch()' will return the last evaluated expression 
-            # in case the "try" part was completed successfully
+lodging_pheno <- read.csv("data/provided/lodg_visual_pheno.csv")
 
-            message("This is the 'try' part")
-
-            normalmixEM(minus_data_by_variety[["17-LDH-STN-SAG-8006"]]$height_diff_cm, mean.constr=c(NA,0))
-
-            # The return value of `readLines()` is the actual value 
-            # that will be returned in case there is no condition 
-            # (e.g. warning or error). 
-            # You don't need to state the return value via `return()` as code 
-            # in the "try" part is not wrapped insided a function (unlike that
-            # for the condition handlers for warnings and error below)
-        },
-        error=function(cond) {
-            message("THIS IS MY ERROR MESSAGE")
-            message("Here's the original error message:")
-            message(cond)
-            # Choose a return value in case of error
-            return("JASON THIS IS AN ERROR")
-        },
-        warning=function(cond) {
-            message("THIS IS MY WARNGIN MESSAGE")
-            message("Here's the original warning message:")
-            message(cond)
-            # Choose a return value in case of warning
-            return("JASON THIS IS A WARNING")
-        },
-        finally={
-        # NOTE:
-        # Here goes everything that should be executed at the end,
-        # regardless of success or error.
-        # If you want more than one expression to be executed, then you 
-        # need to wrap them in curly brackets ({...}); otherwise you could
-        # just have written 'finally=<expression>' 
-            message("Some ending message")
-            message("Some other message at the end")
+function (x, lambda = NULL, mu = NULL, sigma = NULL, k = 2, mean.constr = NULL, 
+    sd.constr = NULL, epsilon = 1e-08, maxit = 1000, maxrestarts = 20, 
+    verb = FALSE, fast = FALSE, ECM = FALSE, arbmean = TRUE, 
+    arbvar = TRUE) 
+{
+    warn <- options(warn = -1)
+    x <- as.vector(x)
+    tmp <- normalmix.init(x = x, lambda = lambda, mu = mu, s = sigma, 
+        k = k, arbmean = arbmean, arbvar = arbvar)
+    lambda <- tmp$lambda
+    mu <- tmp$mu
+    sigma <- tmp$s
+    k <- tmp$k
+    arbvar <- tmp$arbvar
+    arbmean <- tmp$arbmean
+    if (fast == TRUE && k == 2 && arbmean == TRUE) {
+        a <- normalmixEM2comp(x, lambda = lambda[1], mu = mu, 
+            sigsqrd = sigma^2, eps = epsilon, maxit = maxit, 
+            verb = verb)
+    }
+    else {
+        z <- parse.constraints(mean.constr, k = k, allsame = !arbmean)
+        meancat <- z$category
+        meanalpha <- z$alpha
+        z <- parse.constraints(sd.constr, k = k, allsame = !arbvar)
+        sdcat <- z$category
+        sdalpha <- z$alpha
+        ECM <- ECM || any(meancat != 1:k) || any(sdcat != 1)
+        n <- length(x)
+        notdone <- TRUE
+        restarts <- 0
+        while (notdone) {
+            notdone <- FALSE
+            tmp <- normalmix.init(x = x, lambda = lambda, mu = mu, 
+                s = sigma, k = k, arbmean = arbmean, arbvar = arbvar)
+            lambda <- tmp$lambda
+            mu <- tmp$mu
+            k <- tmp$k
+            sigma <- tmp$s
+            var <- sigma^2
+            diff <- epsilon + 1
+            iter <- 0
+            postprobs <- matrix(nrow = n, ncol = k)
+            mu <- rep(mu, k)[1:k]
+            sigma <- rep(sigma, k)[1:k]
+            z <- .C(C_normpost, as.integer(n), as.integer(k), 
+                as.double(x), as.double(mu), as.double(sigma), 
+                as.double(lambda), res2 = double(n * k), double(3 * 
+                  k), post = double(n * k), loglik = double(1), 
+                PACKAGE = "mixtools")
+            postprobs <- matrix(z$post, nrow = n)
+            res <- matrix(z$res2, nrow = n)
+            ll <- obsloglik <- z$loglik
+            while (diff > epsilon && iter < maxit) {
+                lambda <- colMeans(postprobs)
+                mu[meancat == 0] <- meanalpha[meancat == 0]
+                if (max(meancat) > 0) {
+                  for (i in 1:max(meancat)) {
+                    w <- which(meancat == i)
+                    if (length(w) == 1) {
+                      mu[w] <- sum(postprobs[, w] * x)/(n * lambda[w])
+                    }
+                    else {
+                      tmp <- t(postprobs[, w]) * (meanalpha[w]/sigma[w]^2)
+                      mu[w] <- meanalpha[w] * sum(t(tmp) * x)/sum(tmp * 
+                        meanalpha[w])
+                    }
+                  }
+                }
+                if (ECM) {
+                  z <- .C(C_normpost, as.integer(n), as.integer(k), 
+                    as.double(x), as.double(mu), as.double(sigma), 
+                    as.double(lambda), res2 = double(n * k), 
+                    double(3 * k), post = double(n * k), loglik = double(1), 
+                    PACKAGE = "mixtools")
+                  postprobs <- matrix(z$post, nrow = n)
+                  res <- matrix(z$res2, nrow = n)
+                  lambda <- colMeans(postprobs)
+                }
+                sigma[sdcat == 0] <- sdalpha[sdcat == 0]
+                if (max(sdcat) > 0) {
+                  for (i in 1:max(sdcat)) {
+                    w <- which(sdcat == i)
+                    if (length(w) == 1) {
+                      sigma[w] <- sqrt(sum(postprobs[, w] * res[, 
+                        w])/(n * lambda[w]))
+                    }
+                    else {
+                      tmp <- t(postprobs[, w])/sdalpha[w]
+                      sigma[w] <- sdalpha[w] * sqrt(sum(t(tmp) * 
+                        res[, w])/(n * sum(lambda[w])))
+                    }
+                  }
+                  if (any(sigma < 1e-08)) {
+                    notdone <- TRUE
+                    cat("One of the variances is going to zero; ", 
+                      "trying new starting values.\n")
+                    restarts <- restarts + 1
+                    lambda <- mu <- sigma <- NULL
+                    if (restarts > maxrestarts) {
+                      stop("Too many tries!")
+                    }
+                    break
+                  }
+                }
+                z <- .C(C_normpost, as.integer(n), as.integer(k), 
+                  as.double(x), as.double(mu), as.double(sigma), 
+                  as.double(lambda), res2 = double(n * k), double(3 * 
+                    k), post = double(n * k), loglik = double(1), 
+                  PACKAGE = "mixtools")
+                postprobs <- matrix(z$post, nrow = n)
+                res <- matrix(z$res2, nrow = n)
+                newobsloglik <- z$loglik
+                diff <- newobsloglik - obsloglik
+                obsloglik <- newobsloglik
+                ll <- c(ll, obsloglik)
+                iter <- iter + 1
+                if (verb) {
+                  cat("iteration =", iter, " log-lik diff =", 
+                    diff, " log-lik =", obsloglik, "\n")
+                  print(rbind(lambda, mu, sigma))
+                }
+            }
         }
-    )    
-    return(out)
+        if (iter == maxit) {
+            cat("WARNING! NOT CONVERGENT!", "\n")
+        }
+        cat("number of iterations=", iter, "\n")
+        if (arbmean == FALSE) {
+            scale.order = order(sigma)
+            sigma.min = min(sigma)
+            postprobs = postprobs[, scale.order]
+            colnames(postprobs) <- c(paste("comp", ".", 1:k, 
+                sep = ""))
+            a = list(x = x, lambda = lambda[scale.order], mu = mu, 
+                sigma = sigma.min, scale = sigma[scale.order]/sigma.min, 
+                loglik = obsloglik, posterior = postprobs, all.loglik = ll, 
+                restarts = restarts, ft = "normalmixEM")
+        }
+        else {
+            colnames(postprobs) <- c(paste("comp", ".", 1:k, 
+                sep = ""))
+            a = list(x = x, lambda = lambda, mu = mu, sigma = sigma, 
+                loglik = obsloglik, posterior = postprobs, all.loglik = ll, 
+                restarts = restarts, ft = "normalmixEM")
+        }
+    }
+    class(a) = "mixEM"
+    options(warn)
+    a
 }
