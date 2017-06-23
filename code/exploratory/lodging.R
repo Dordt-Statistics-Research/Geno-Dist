@@ -71,22 +71,25 @@ BIC <- function(n, k, l) {
 }
 
 plot_data <- function(data, free_params, k=2, mean.constr=NULL, sd.constr=NULL, ...){
-    ## invisible(models <- mclapply(1:20, function(x) {normalmixEM(data, mean.constr = mean.constr, sd.constr = sd.constr)}, mc.cores=20))
-    invisible(models <- mclapply(1:20, function(x) {
-        tryCatch(
-        {
-            normalmixEM(data, k=k, mean.constr=mean.constr, sd.constr=sd.constr)
-        },
-        error=function(cond) {
-            message("JASON: ERROR")
-            NULL
-        })
-    }))
-    print("here")
-    ## browser()
-    ## Remove models that aren't of class mixEM. Examples include elements with class try-error
-    ## Then only 
-    models <- models[sapply(models, inherits, "mixEM")]
+    if (!is.null(free_params)) {
+        invisible(models <- mclapply(1:20, function(x) {
+            tryCatch(
+            {
+                normalmixEM(data, k=k, mean.constr=mean.constr, sd.constr=sd.constr)
+            },
+            error=function(cond) {
+                message("JASON: ERROR")
+                NULL
+            })
+        }))
+        print("here")
+        ## Remove models that aren't of class mixEM. Examples include elements with class try-error
+        ## Then only 
+        models <- models[sapply(models, inherits, "mixEM")]
+    } else {
+        models <- NULL
+    }
+
     if (length(models) == 0) {
         model <- NULL
     } else {
@@ -108,17 +111,21 @@ plot_data <- function(data, free_params, k=2, mean.constr=NULL, sd.constr=NULL, 
 }
  
 sample_plots <- c(1009,1010,1029,1044,1046,1057,5071,5072,5073,6093,8005,8006,8007,11072,11073,11074)
-sample_plots <- c(8006)
+sample_plots <- c(1057)
     
 doit <- function() {
-    pdf("data/exploratory/samples12.pdf",width=14,height=8.5)
+    pdf("data/exploratory/samples13.pdf",width=14,height=8.5)
     ##pdf("graphs/prelimresults.pdf", width=11, height=8.5)
-    par(mfrow=c(2,4))
+    par(mfrow=c(3,4))
     for (sample in sample_plots) {         
         name <- paste0("17-LDH-STN-SAG-", sample)
         print(name)
         invisible(data <- minus_data_by_variety[[name]]$height_diff_cm)
-        print(length(data))   
+        print(length(data))
+        plot_data(data, 2, k=1, main2=name, sub="Unconstrained")
+        plot_data(data, NULL)
+        plot_data(data, NULL)
+        plot_data(data, NULL)
         plot_data(data, 5, k=2, main2=name, sub="Unconstrained")
         plot_data(data, 4, k=2, mean.constr=c(NA,0), main2=name, sub="Mean Constrained")
         plot_data(data, 4, k=2, sd.constr=c("a","a"), main2=name, sub="SD Constrained")
