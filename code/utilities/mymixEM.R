@@ -15,12 +15,16 @@ mymixEM <- function (x, lambda = NULL, mu = NULL, sigma = NULL, k = 2, mean.cons
             ##     "xmax:",xmax,"\n",
             ##     "mumin:",mumin,"\n",
             ##     "mumax:",mumax))
-            if (xmin < x & x < xmax) {
-                (mumax-mumin)/(xmax-xmin)*(x-xmin)+mumin
+            if (mumin < x & x < mumax) {
+            ## if (xmin < x & x < xmax) {
+                ## (mumax-mumin)/(xmax-xmin)*(x-xmin)+mumin
+                x
             } else if (x >= xmax) {
-                mumax
+                ## mumax
+                xmax + xmax - xmin
             } else {                        #else if (x <= xmin)
-                mumin
+                ## mumin
+                xmin + xmax - xmin
             }
         }
     }
@@ -61,7 +65,6 @@ mymixEM <- function (x, lambda = NULL, mu = NULL, sigma = NULL, k = 2, mean.cons
         maps <- apply(mean.limits, 1, function(murange) { #returns a list
             getMap(xrange, murange)
         })
-        print(mean.limits)
         ## Generate the mapping to redirect log liklihood calculations by the algorithm
         loglikmap <- function(mu) {
             sapply(seq(mu), function(i) {
@@ -148,6 +151,8 @@ mymixEM <- function (x, lambda = NULL, mu = NULL, sigma = NULL, k = 2, mean.cons
                         res[, w])/(n * sum(lambda[w])))
                     }
                   }
+                  if (is.na(any(sigma < 1e-08)))
+                      browser()
                   if (any(sigma < 1e-08)) {
                     notdone <- TRUE
                     cat("One of the variances is going to zero; ", 
